@@ -1,4 +1,4 @@
-# Trade Master
+# Trade Book
 
 Application focused to identify the categories of trades in a bank´s portfolio based on value and client´s sector.
 

@@ -1,6 +1,6 @@
 using System;
 
-namespace TradeMaster.Models
+namespace TradeBook.Models
 {
   public class TradeRiskFactory : TradeFactory
   {

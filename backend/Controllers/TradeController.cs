@@ -1,8 +1,8 @@
 using System;
 using Microsoft.AspNetCore.Mvc;
-using TradeMaster.Models;
+using TradeBook.Models;
 
-namespace TradeMaster.Controllers
+namespace TradeBook.Controllers
 {
   [ApiController]
   [Route("[controller]")]

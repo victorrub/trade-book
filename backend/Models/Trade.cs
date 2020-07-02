@@ -1,4 +1,4 @@
-namespace TradeMaster.Models
+namespace TradeBook.Models
 {
   public class Trade : ITrade
   {
