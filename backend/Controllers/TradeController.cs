@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using TradeBook.Models;
+using TradeBook.Services;
 
 namespace TradeBook.Controllers
 {
@@ -8,20 +10,24 @@ namespace TradeBook.Controllers
   [Route("[controller]")]
   public class TradeController : ControllerBase
   {
-    [HttpGet]
-    public ActionResult<string> Get()
+    private readonly TradeCategoriesService _tradeCategoriesService;
+
+    public TradeController(TradeCategoriesService tradeCategoriesService)
     {
-      return Ok("Hello Trade!");
+      _tradeCategoriesService = tradeCategoriesService;
     }
 
+    [HttpGet]
+    public ActionResult<List<TradeCategories>> Get() => _tradeCategoriesService.Get();
+
     [HttpPost]
-    public ActionResult<Trade> Post(TradeRequest data)
+    public ActionResult<Trade> Post(Trade data)
     {
       try
       {
         TradeFactory factory = new TradeRiskFactory();
 
-        Trade myTrade = factory.CreateTrade(data.Value, data.ClientSector);
+        TradeRisk myTrade = factory.CreateTrade(data.Value, data.ClientSector);
 
         return Ok(myTrade);
       }
