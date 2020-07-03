@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
+using TradeBook.Models;
+using TradeBook.Services;
 
 namespace TradeBook
 {
@@ -18,6 +21,16 @@ namespace TradeBook
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
+      services.Configure<TradeBookDatabaseSettings>(
+        Configuration.GetSection(nameof(TradeBookDatabaseSettings))
+      );
+
+      services.AddSingleton<ITradeBookDatabaseSettings>(
+        sp => sp.GetRequiredService<IOptions<TradeBookDatabaseSettings>>().Value
+      );
+
+      services.AddSingleton<TradeCategoriesService>();
+
       services.AddControllers();
     }
 
@@ -25,9 +38,7 @@ namespace TradeBook
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
       if (env.IsDevelopment())
-      {
         app.UseDeveloperExceptionPage();
-      }
 
       app.UseHttpsRedirection();
 
