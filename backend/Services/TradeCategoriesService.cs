@@ -2,23 +2,19 @@ using MongoDB.Driver;
 using System.Collections.Generic;
 using System.Linq;
 using TradeBook.Models;
+using TradeBook.Data;
 
 namespace TradeBook.Services
 {
   public class TradeCategoriesService
   {
-    private readonly IMongoCollection<TradeCategories> _categories;
+    private readonly TradeBookContext _context;
 
-    public TradeCategoriesService(ITradeBookDatabaseSettings settings)
+    public TradeCategoriesService(TradeBookContext context)
     {
-      var client = new MongoClient(settings.ConnectionString);
-      var database = client.GetDatabase(settings.DatabaseName);
-
-      _categories = database.GetCollection<TradeCategories>(
-        settings.DatabaseCollections.TradeCategoriesCollectionName
-      );
+      _context = context;
     }
 
-    public List<TradeCategories> Get() => _categories.Find(trade => true).ToList();
+    public List<TradeCategories> Get() => _context.TradeCategories.Find(trade => true).ToList();
   }
 }

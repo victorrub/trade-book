@@ -4,7 +4,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using TradeBook.Models;
+using TradeBook.Data;
+using TradeBook.Data.Core;
 using TradeBook.Services;
 
 namespace TradeBook
@@ -18,23 +19,21 @@ namespace TradeBook
 
     public IConfiguration Configuration { get; }
 
-    // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
-      services.Configure<TradeBookDatabaseSettings>(
-        Configuration.GetSection(nameof(TradeBookDatabaseSettings))
+      services.Configure<DbContextOptions>(Configuration.GetSection("TradeBookDatabase"));
+
+      services.AddSingleton<IDbContextOptions>(
+        sp => sp.GetRequiredService<IOptions<DbContextOptions>>().Value
       );
 
-      services.AddSingleton<ITradeBookDatabaseSettings>(
-        sp => sp.GetRequiredService<IOptions<TradeBookDatabaseSettings>>().Value
-      );
+      services.AddSingleton<TradeBookContext>();
 
       services.AddSingleton<TradeCategoriesService>();
 
       services.AddControllers();
     }
 
-    // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
       if (env.IsDevelopment())
