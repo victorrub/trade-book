@@ -4,7 +4,7 @@ namespace TradeBook.Models
 {
   public class TradeRiskFactory : TradeFactory
   {
-    public override Trade CreateTrade(double value, string clientSector)
+    public override TradeRisk CreateTrade(double value, string clientSector)
     {
       if (value >= 1000000.00)
       {
