@@ -29,6 +29,7 @@ namespace TradeBook
 
       services.AddSingleton<TradeBookContext>();
 
+      services.AddSingleton<TradeService>();
       services.AddSingleton<TradeCategoriesService>();
 
       services.AddControllers();

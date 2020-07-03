@@ -3,18 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using TradeBook.Models;
 using TradeBook.Data;
+using TradeBook.Services.Core;
 
 namespace TradeBook.Services
 {
-  public class TradeCategoriesService
+  public class TradeCategoriesService : DatabaseServices
   {
-    private readonly TradeBookContext _context;
-
-    public TradeCategoriesService(TradeBookContext context)
+    public TradeCategoriesService(TradeBookContext context) : base(context)
     {
-      _context = context;
     }
 
-    public List<TradeCategories> Get() => _context.TradeCategories.Find(trade => true).ToList();
+    public List<TradeCategories> Get() => Context.TradeCategories.Find(category => true).ToList();
   }
 }
