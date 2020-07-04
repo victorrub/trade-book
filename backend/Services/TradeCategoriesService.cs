@@ -13,6 +13,22 @@ namespace TradeBook.Services
     {
     }
 
-    public List<TradeCategories> Get() => Context.TradeCategories.Find(category => true).ToList();
+    public List<RiskEvaluator> GetRiskCategories()
+    {
+      List<TradeCategories> categories = Context.TradeCategories.Find(category => true).ToList();
+      List<RiskEvaluator> risks = new List<RiskEvaluator>();
+
+      foreach (TradeCategories category in categories)
+      {
+        risks.Add(new RiskEvaluator(
+          category.CategoryName,
+          category.MinimumValue,
+          category.LimitValue,
+          category.ClientSector
+        ));
+      }
+
+      return risks;
+    }
   }
 }

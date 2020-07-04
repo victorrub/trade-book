@@ -12,11 +12,11 @@ namespace TradeBook.Models
     [BsonElement("name")]
     public string CategoryName { get; set; }
 
-    [BsonElement("min")]
-    public double Min { get; set; }
+    [BsonElement("minimumValue")]
+    public double MinimumValue { get; set; }
 
-    [BsonElement("limit")]
-    public double Limit { get; set; }
+    [BsonElement("limitValue")]
+    public double LimitValue { get; set; }
 
     [BsonElement("clientSector")]
     public string ClientSector { get; set; }

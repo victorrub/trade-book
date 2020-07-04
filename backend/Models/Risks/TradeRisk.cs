@@ -1,6 +1,6 @@
-namespace TradeBook.Models
+namespace TradeBook.Models.Risks
 {
-  public class TradeRisk : ITrade
+  public abstract class TradeRisk : ITrade
   {
     public double Value { get; }
 
