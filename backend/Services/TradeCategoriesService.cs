@@ -24,7 +24,8 @@ namespace TradeBook.Services
           category.CategoryName,
           category.MinimumValue,
           category.LimitValue,
-          category.ClientSector
+          category.ClientSector,
+          category.UpdatedAt
         ));
       }
 

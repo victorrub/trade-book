@@ -46,8 +46,9 @@ namespace TradeBook.Controllers
       {
         return NotFound(new { message = ex.Message });
       }
-      catch (Exception)
+      catch (Exception ex)
       {
+        Console.WriteLine($"> [Trade] Exception : {ex.Message}");
         return BadRequest();
       }
     }

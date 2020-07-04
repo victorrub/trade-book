@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using TradeBook.Models.Rules;
 
@@ -7,12 +8,13 @@ namespace TradeBook.Models
   {
     private List<IRule> _rules;
 
-    public RiskEvaluator(string categoryName, double minimumValue, double limitValue, string clientSector)
+    public RiskEvaluator(string categoryName, double minimumValue, double limitValue, string clientSector, DateTime updatedAt)
     {
       CategoryName = categoryName;
       MinimumValue = minimumValue;
       LimitValue = limitValue;
       ClientSector = clientSector;
+      UpdatedAt = updatedAt;
 
       _rules = new List<IRule>();
 
