@@ -15,9 +15,8 @@ namespace TradeBook.Data
 
     protected override void OnModelCreating()
     {
-      Trade = Database.GetCollection<Trade>(nameof(Trade));
-
-      TradeCategories = Database.GetCollection<TradeCategories>(nameof(TradeCategories));
+      Trade = ModelBuilder<Trade>();
+      TradeCategories = ModelBuilder<TradeCategories>();
     }
   }
 }

@@ -1,10 +1,11 @@
 using System;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using TradeBook.Data.Core;
 
 namespace TradeBook.Models
 {
-  public class Trade : ITrade
+  public class Trade : ITrade, IDbSet
   {
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]

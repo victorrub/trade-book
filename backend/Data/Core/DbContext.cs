@@ -15,5 +15,7 @@ namespace TradeBook.Data.Core
     }
 
     protected abstract void OnModelCreating();
+
+    protected IMongoCollection<T> ModelBuilder<T>() where T : IDbSet => Database.GetCollection<T>(typeof(T).Name);
   }
 }
