@@ -22,7 +22,7 @@ namespace TradeBook.Controllers
     }
 
     [HttpGet]
-    public ActionResult<string> Get() => "Hello Trader!";
+    public ActionResult<List<Trade>> Get() => _tradeRiskService.Get();
 
     [HttpPost]
     public ActionResult Post(List<Trade> trades)
