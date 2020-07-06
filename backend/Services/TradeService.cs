@@ -1,9 +1,11 @@
 using MongoDB.Driver;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using TradeBook.Models;
 using TradeBook.Data;
 using TradeBook.Services.Core;
+using TradeBook.Models.Risks;
 
 namespace TradeBook.Services
 {
@@ -17,9 +19,20 @@ namespace TradeBook.Services
 
     public Trade Get(string id) => Context.Trade.Find(trade => trade.Id == id).FirstOrDefault();
 
-    public void Create(Trade trade) => Context.Trade.InsertOne(trade);
+    public void Create(Trade trade)
+    {
+      trade.CreatedAt = DateTime.Now;
+      trade.UpdatedAt = DateTime.Now;
 
-    public void Update(string id, Trade tradeIn) => Context.Trade.ReplaceOne(trade => trade.Id == id, tradeIn);
+      Context.Trade.InsertOne(trade);
+    }
+
+    public void Update(string id, Trade tradeIn)
+    {
+      tradeIn.UpdatedAt = DateTime.Now;
+
+      Context.Trade.ReplaceOne(trade => trade.Id == id, tradeIn);
+    }
 
     public void Remove(Trade tradeIn) => Context.Trade.DeleteOne(trade => trade.Id == tradeIn.Id);
   }

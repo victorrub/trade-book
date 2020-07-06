@@ -1,4 +1,4 @@
-namespace TradeBook.Models
+namespace TradeBook.Models.Commom
 {
   public interface ITrade
   {

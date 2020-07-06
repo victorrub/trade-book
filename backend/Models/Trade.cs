@@ -2,10 +2,11 @@ using System;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using TradeBook.Data.Core;
+using TradeBook.Models.Commom;
 
 namespace TradeBook.Models
 {
-  public class Trade : ITrade, IDbSet
+  public class Trade : ITrade, ICategory, IDbSet
   {
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
@@ -16,6 +17,9 @@ namespace TradeBook.Models
 
     [BsonElement("clientSector")]
     public string ClientSector { get; set; }
+
+    [BsonElement("category")]
+    public string Category { get; set; }
 
     [BsonElement("createdAt")]
     public DateTime CreatedAt { get; set; }

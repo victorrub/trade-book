@@ -1,6 +1,8 @@
+using TradeBook.Models.Commom;
+
 namespace TradeBook.Models.Risks
 {
-  public abstract class TradeRisk : ITrade
+  public abstract class TradeRisk : ITrade, ICategory
   {
     public double Value { get; }
 

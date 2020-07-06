@@ -10,7 +10,7 @@ namespace TradeBook.Models
 
     public RiskEvaluator(string categoryName, double minimumValue, double limitValue, string clientSector, DateTime updatedAt)
     {
-      CategoryName = categoryName;
+      Category = categoryName;
       MinimumValue = minimumValue;
       LimitValue = limitValue;
       ClientSector = clientSector;

@@ -12,26 +12,28 @@ namespace TradeBook.Controllers
   [Route("[controller]")]
   public class TradeController : ControllerBase
   {
-    private readonly TradeService _tradeService;
     private readonly TradeCategoriesService _tradeCategoriesService;
+    private readonly TradeRiskService _tradeRiskService;
 
-    public TradeController(TradeService tradeService, TradeCategoriesService tradeCategoriesService)
+    public TradeController(TradeCategoriesService tradeCategoriesService, TradeRiskService tradeRiskService)
     {
-      _tradeService = tradeService;
       _tradeCategoriesService = tradeCategoriesService;
+      _tradeRiskService = tradeRiskService;
     }
 
     [HttpGet]
     public ActionResult<string> Get() => "Hello Trader!";
 
     [HttpPost]
-    public ActionResult<List<TradeRisk>> Post(List<Trade> trades)
+    public ActionResult Post(List<Trade> trades)
     {
       try
       {
         List<RiskEvaluator> categories = _tradeCategoriesService.GetRiskCategories();
-        List<TradeRisk> tradeRisks = new List<TradeRisk>();
         TradeFactory factory = new TradeRiskFactory();
+
+        List<TradeRisk> tradeRisks = new List<TradeRisk>();
+        List<Object> invalidTrades = new List<Object>();
 
         foreach (Trade trade in trades)
         {
@@ -39,20 +41,52 @@ namespace TradeBook.Controllers
 
           if (selectedTradeRisk == null)
           {
-            Console.WriteLine($"\n > ArgumentException : {trade.Value} / {trade.ClientSector} - The Category compatible with these parameters was not found");
+            invalidTrades.Add(new
+            {
+              Value = trade.Value,
+              ClientSector = trade.ClientSector,
+              Message = "The category compatible with these parameters was not found."
+            });
+
             continue;
           }
 
-          TradeRisk tradeRisk = factory.CreateTrade(selectedTradeRisk.CategoryName, trade.Value, trade.ClientSector);
+          TradeRisk tradeRisk = factory.CreateTrade(selectedTradeRisk.Category, trade.Value, trade.ClientSector);
+
+          _tradeRiskService.Store(tradeRisk);
           tradeRisks.Add(tradeRisk);
         }
 
-        return Ok(tradeRisks);
+        var response = new
+        {
+          Status = "Success",
+          RequestedAt = DateTime.Now,
+          Trades = new
+          {
+            Received = trades.Count,
+            Success = new
+            {
+              Total = tradeRisks.Count,
+              Cases = tradeRisks
+            },
+            Invalid = new
+            {
+              Total = invalidTrades.Count,
+              Cases = invalidTrades
+            }
+          }
+        };
+
+        return Ok(response);
       }
       catch (Exception ex)
       {
         Console.WriteLine($"> [Trade] Exception : {ex.Message}");
-        return BadRequest();
+        return BadRequest(new
+        {
+          Status = "Error",
+          Message = "An error occurred while processing your request."
+        });
       }
     }
   }

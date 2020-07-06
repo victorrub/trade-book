@@ -21,7 +21,7 @@ namespace TradeBook.Services
       foreach (TradeCategories category in categories)
       {
         risks.Add(new RiskEvaluator(
-          category.CategoryName,
+          category.Category,
           category.MinimumValue,
           category.LimitValue,
           category.ClientSector,
