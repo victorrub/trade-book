@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using TradeBook.Models;
 using TradeBook.Models.Factories;
 using TradeBook.Models.Risks;
@@ -12,11 +13,13 @@ namespace TradeBook.Controllers
   [Route("[controller]")]
   public class TradeController : ControllerBase
   {
+    private readonly ILogger _logger;
     private readonly TradeCategoriesService _tradeCategoriesService;
     private readonly TradeRiskService _tradeRiskService;
 
-    public TradeController(TradeCategoriesService tradeCategoriesService, TradeRiskService tradeRiskService)
+    public TradeController(ILogger<TradeController> logger, TradeCategoriesService tradeCategoriesService, TradeRiskService tradeRiskService)
     {
+      _logger = logger;
       _tradeCategoriesService = tradeCategoriesService;
       _tradeRiskService = tradeRiskService;
     }
@@ -81,7 +84,7 @@ namespace TradeBook.Controllers
       }
       catch (Exception ex)
       {
-        Console.WriteLine($"> [Trade] Exception : {ex.Message}");
+        _logger.LogError($"> [Trade] Exception : {ex.Message}");
         return BadRequest(new
         {
           Status = "Error",
