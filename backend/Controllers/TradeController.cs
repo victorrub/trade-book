@@ -25,26 +25,29 @@ namespace TradeBook.Controllers
     public ActionResult<string> Get() => "Hello Trader!";
 
     [HttpPost]
-    public ActionResult<Trade> Post(Trade trade)
+    public ActionResult<List<TradeRisk>> Post(List<Trade> trades)
     {
       try
       {
         List<RiskEvaluator> categories = _tradeCategoriesService.GetRiskCategories();
-
-        RiskEvaluator selectedTradeRisk = categories.Find(r => r.VerifyRules(trade));
-
-        if (selectedTradeRisk == null)
-          throw new ArgumentException("The Category compatible with these parameters was not found");
-
+        List<TradeRisk> tradeRisks = new List<TradeRisk>();
         TradeFactory factory = new TradeRiskFactory();
 
-        TradeRisk myTrade = factory.CreateTrade(selectedTradeRisk.CategoryName, trade.Value, trade.ClientSector);
+        foreach (Trade trade in trades)
+        {
+          RiskEvaluator selectedTradeRisk = categories.Find(r => r.VerifyRules(trade));
 
-        return Ok(myTrade.Category);
-      }
-      catch (ArgumentException ex)
-      {
-        return NotFound(new { message = ex.Message });
+          if (selectedTradeRisk == null)
+          {
+            Console.WriteLine($"\n > ArgumentException : {trade.Value} / {trade.ClientSector} - The Category compatible with these parameters was not found");
+            continue;
+          }
+
+          TradeRisk tradeRisk = factory.CreateTrade(selectedTradeRisk.CategoryName, trade.Value, trade.ClientSector);
+          tradeRisks.Add(tradeRisk);
+        }
+
+        return Ok(tradeRisks);
       }
       catch (Exception ex)
       {
