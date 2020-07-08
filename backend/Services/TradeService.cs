@@ -5,7 +5,6 @@ using System.Linq;
 using TradeBook.Models;
 using TradeBook.Data;
 using TradeBook.Services.Core;
-using TradeBook.Models.Risks;
 
 namespace TradeBook.Services
 {
