@@ -6,6 +6,7 @@ using TradeBook.Models;
 using TradeBook.Models.Factories;
 using TradeBook.Models.Risks;
 using TradeBook.Services;
+using TradeBook.Models.Operations.Responses;
 
 namespace TradeBook.Controllers
 {
@@ -13,7 +14,7 @@ namespace TradeBook.Controllers
   [Route("[controller]")]
   public class TradesController : ControllerBase
   {
-    private readonly ILogger _logger;
+    private readonly ILogger<TradesController> _logger;
     private readonly TradeCategoriesService _tradeCategoriesService;
     private readonly TradeRiskService _tradeRiskService;
 
@@ -33,19 +34,13 @@ namespace TradeBook.Controllers
       {
         List<Trade> trades = _tradeRiskService.Get();
 
-        if (trades == null)
-          return NotFound();
-
-        return Ok(trades);
+        TradeListResponse successResponse = new TradeListResponse(trades);
+        return successResponse.GetResponse();
       }
       catch (Exception ex)
       {
-        _logger.LogError($"> [Trade | Get | All] Exception : {ex.Message}");
-        return BadRequest(new
-        {
-          Status = "Error",
-          Message = "An error occurred while processing your request."
-        });
+        ErrorResponse<TradesController> errorResponse = new ErrorResponse<TradesController>(_logger, ex);
+        return errorResponse.GetResponse();
       }
     }
 
@@ -57,23 +52,23 @@ namespace TradeBook.Controllers
         Trade trade = _tradeRiskService.Get(id);
 
         if (trade == null)
-          return NotFound();
+        {
+          StatusResponse notFoundResponse = new StatusResponse("Not Found", "Trade not found");
+          return notFoundResponse.GetResponse();
+        }
 
-        return Ok(trade);
+        TradeResponse successResponse = new TradeResponse(trade);
+        return successResponse.GetResponse();
       }
       catch (Exception ex)
       {
-        _logger.LogError($"> [Trade | Get | Once] Exception : {ex.Message}");
-        return BadRequest(new
-        {
-          Status = "Error",
-          Message = "An error occurred while processing your request."
-        });
+        ErrorResponse<TradesController> errorResponse = new ErrorResponse<TradesController>(_logger, ex);
+        return errorResponse.GetResponse();
       }
     }
 
     [HttpPost]
-    public ActionResult Post(List<Trade> trades)
+    public ActionResult Post(List<Trade> portfolio)
     {
       try
       {
@@ -83,9 +78,9 @@ namespace TradeBook.Controllers
         List<TradeRisk> tradeRisks = new List<TradeRisk>();
         List<Object> invalidTrades = new List<Object>();
 
-        foreach (Trade trade in trades)
+        foreach (Trade trade in portfolio)
         {
-          RiskEvaluator selectedTradeRisk = categories.Find(r => r.VerifyRules(trade));
+          RiskEvaluator selectedTradeRisk = categories.Find(rules => rules.VerifyRules(trade));
 
           if (selectedTradeRisk == null)
           {
@@ -105,36 +100,13 @@ namespace TradeBook.Controllers
           tradeRisks.Add(tradeRisk);
         }
 
-        var response = new
-        {
-          Status = "Success",
-          RequestedAt = DateTime.Now,
-          Trades = new
-          {
-            Received = trades.Count,
-            Success = new
-            {
-              Total = tradeRisks.Count,
-              Cases = tradeRisks
-            },
-            Invalid = new
-            {
-              Total = invalidTrades.Count,
-              Cases = invalidTrades
-            }
-          }
-        };
-
-        return Ok(response);
+        StoreTradesResponse successResponse = new StoreTradesResponse(portfolio, tradeRisks, invalidTrades);
+        return successResponse.GetResponse();
       }
       catch (Exception ex)
       {
-        _logger.LogError($"> [Trade | Post] Exception : {ex.Message}");
-        return BadRequest(new
-        {
-          Status = "Error",
-          Message = "An error occurred while processing your request."
-        });
+        ErrorResponse<TradesController> errorResponse = new ErrorResponse<TradesController>(_logger, ex);
+        return errorResponse.GetResponse();
       }
     }
 
@@ -146,35 +118,30 @@ namespace TradeBook.Controllers
         Trade registeredTrade = _tradeRiskService.Get(id);
 
         if (registeredTrade == null)
-          return NotFound(new { Message = "Trade not found." });
+        {
+          StatusResponse notFoundResponse = new StatusResponse("Not Found", "Trade not found");
+          return notFoundResponse.GetResponse();
+        }
 
         List<RiskEvaluator> categories = _tradeCategoriesService.GetRiskCategories();
-        RiskEvaluator selectedTradeRisk = categories.Find(r => r.VerifyRules(tradeIn));
+        RiskEvaluator selectedTradeRisk = categories.Find(rules => rules.VerifyRules(tradeIn));
 
         if (selectedTradeRisk == null)
-          return NotFound(new { Message = "The category compatible with these parameters was not found." });
+        {
+          StatusResponse notFoundResponse = new StatusResponse("Not Found", "The category compatible with these parameters was not found.");
+          return notFoundResponse.GetResponse();
+        }
 
         tradeIn.Category = selectedTradeRisk.Category;
-
         _tradeRiskService.Update(id, tradeIn);
 
-        var response = new
-        {
-          Status = "Success",
-          RequestedAt = DateTime.Now,
-          Trade = tradeIn
-        };
-
-        return Ok(response);
+        TradeResponse successResponse = new TradeResponse(tradeIn);
+        return successResponse.GetResponse();
       }
       catch (Exception ex)
       {
-        _logger.LogError($"> [Trade | Put] Exception : {ex.Message}");
-        return BadRequest(new
-        {
-          Status = "Error",
-          Message = "An error occurred while processing your request."
-        });
+        ErrorResponse<TradesController> errorResponse = new ErrorResponse<TradesController>(_logger, ex);
+        return errorResponse.GetResponse();
       }
     }
 
@@ -186,20 +153,20 @@ namespace TradeBook.Controllers
         Trade registeredTrade = _tradeRiskService.Get(id);
 
         if (registeredTrade == null)
-          return NotFound();
+        {
+          StatusResponse notFoundResponse = new StatusResponse("Not Found", "Trade not found");
+          return notFoundResponse.GetResponse();
+        }
 
         _tradeRiskService.Remove(registeredTrade);
 
-        return Ok();
+        StatusResponse successResponse = new StatusResponse("Success", "Trade successfully deleted");
+        return successResponse.GetResponse();
       }
       catch (Exception ex)
       {
-        _logger.LogError($"> [Trade | Delete] Exception : {ex.Message}");
-        return BadRequest(new
-        {
-          Status = "Error",
-          Message = "An error occurred while processing your request."
-        });
+        ErrorResponse<TradesController> errorResponse = new ErrorResponse<TradesController>(_logger, ex);
+        return errorResponse.GetResponse();
       }
     }
 

@@ -2,7 +2,8 @@ using System;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using TradeBook.Services;
-using TradeBook.Helpers.Requests;
+using TradeBook.Models.Operations.Requests;
+using TradeBook.Models.Operations.Responses;
 
 namespace TradeBook.Controllers
 {
@@ -10,10 +11,10 @@ namespace TradeBook.Controllers
   [Route("[controller]")]
   public class ResetTradesController : ControllerBase
   {
-    private readonly ILogger _logger;
+    private readonly ILogger<ResetTradesController> _logger;
     private readonly TradeRiskService _tradeRiskService;
 
-    public ResetTradesController(ILogger<TradesController> logger,
+    public ResetTradesController(ILogger<ResetTradesController> logger,
         TradeRiskService tradeRiskService)
     {
       _logger = logger;
@@ -26,20 +27,20 @@ namespace TradeBook.Controllers
       try
       {
         if (!doubleCheck.Confirm)
-          return Unauthorized();
+        {
+          StatusResponse unauthorizedResponse = new StatusResponse("Unauthorized", "Operation not confirmed");
+          return unauthorizedResponse.GetResponse();
+        }
 
         _tradeRiskService.RemoveAll();
 
-        return Ok();
+        StatusResponse successResponse = new StatusResponse("Success", "Portfolio successfully deleted");
+        return successResponse.GetResponse();
       }
       catch (Exception ex)
       {
-        _logger.LogError($"> [ResetTrades] Exception : {ex.Message}");
-        return BadRequest(new
-        {
-          Status = "Error",
-          Message = "An error occurred while processing your request."
-        });
+        ErrorResponse<ResetTradesController> errorResponse = new ErrorResponse<ResetTradesController>(_logger, ex);
+        return errorResponse.GetResponse();
       }
     }
 

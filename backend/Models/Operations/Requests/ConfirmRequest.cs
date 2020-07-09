@@ -1,4 +1,4 @@
-namespace TradeBook.Helpers.Requests
+namespace TradeBook.Models.Operations.Requests
 {
   public class ConfirmRequest
   {
