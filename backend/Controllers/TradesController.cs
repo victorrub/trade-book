@@ -5,8 +5,9 @@ using Microsoft.Extensions.Logging;
 using TradeBook.Models;
 using TradeBook.Models.Factories;
 using TradeBook.Models.Risks;
-using TradeBook.Services;
+using TradeBook.Models.Operations;
 using TradeBook.Models.Operations.Responses;
+using TradeBook.Services;
 
 namespace TradeBook.Controllers
 {
@@ -17,6 +18,7 @@ namespace TradeBook.Controllers
     private readonly ILogger<TradesController> _logger;
     private readonly TradeCategoriesService _tradeCategoriesService;
     private readonly TradeRiskService _tradeRiskService;
+    private readonly ResponseContext _responseContext;
 
     public TradesController(ILogger<TradesController> logger,
         TradeCategoriesService tradeCategoriesService,
@@ -25,6 +27,7 @@ namespace TradeBook.Controllers
       _logger = logger;
       _tradeCategoriesService = tradeCategoriesService;
       _tradeRiskService = tradeRiskService;
+      _responseContext = new ResponseContext();
     }
 
     [HttpGet]
@@ -34,13 +37,13 @@ namespace TradeBook.Controllers
       {
         List<Trade> trades = _tradeRiskService.Get();
 
-        TradeListResponse successResponse = new TradeListResponse(trades);
-        return successResponse.GetResponse();
+        _responseContext.SetResponse(new TradeListResponse(trades));
+        return _responseContext.GetResponse();
       }
       catch (Exception ex)
       {
-        ErrorResponse<TradesController> errorResponse = new ErrorResponse<TradesController>(_logger, ex);
-        return errorResponse.GetResponse();
+        _responseContext.SetResponse(new ErrorResponse<TradesController>(_logger, ex));
+        return _responseContext.GetResponse();
       }
     }
 
@@ -53,17 +56,17 @@ namespace TradeBook.Controllers
 
         if (trade == null)
         {
-          StatusResponse notFoundResponse = new StatusResponse("Not Found", "Trade not found");
-          return notFoundResponse.GetResponse();
+          _responseContext.SetResponse(new StatusResponse("Not Found", "Trade not found"));
+          return _responseContext.GetResponse();
         }
 
-        TradeResponse successResponse = new TradeResponse(trade);
-        return successResponse.GetResponse();
+        _responseContext.SetResponse(new TradeResponse(trade));
+        return _responseContext.GetResponse();
       }
       catch (Exception ex)
       {
-        ErrorResponse<TradesController> errorResponse = new ErrorResponse<TradesController>(_logger, ex);
-        return errorResponse.GetResponse();
+        _responseContext.SetResponse(new ErrorResponse<TradesController>(_logger, ex));
+        return _responseContext.GetResponse();
       }
     }
 
@@ -100,13 +103,13 @@ namespace TradeBook.Controllers
           tradeRisks.Add(tradeRisk);
         }
 
-        StoreTradesResponse successResponse = new StoreTradesResponse(portfolio, tradeRisks, invalidTrades);
-        return successResponse.GetResponse();
+        _responseContext.SetResponse(new StoreTradesResponse(portfolio, tradeRisks, invalidTrades));
+        return _responseContext.GetResponse();
       }
       catch (Exception ex)
       {
-        ErrorResponse<TradesController> errorResponse = new ErrorResponse<TradesController>(_logger, ex);
-        return errorResponse.GetResponse();
+        _responseContext.SetResponse(new ErrorResponse<TradesController>(_logger, ex));
+        return _responseContext.GetResponse();
       }
     }
 
@@ -119,8 +122,8 @@ namespace TradeBook.Controllers
 
         if (registeredTrade == null)
         {
-          StatusResponse notFoundResponse = new StatusResponse("Not Found", "Trade not found");
-          return notFoundResponse.GetResponse();
+          _responseContext.SetResponse(new StatusResponse("Not Found", "Trade not found"));
+          return _responseContext.GetResponse();
         }
 
         List<RiskEvaluator> categories = _tradeCategoriesService.GetRiskCategories();
@@ -128,20 +131,20 @@ namespace TradeBook.Controllers
 
         if (selectedTradeRisk == null)
         {
-          StatusResponse notFoundResponse = new StatusResponse("Not Found", "The category compatible with these parameters was not found.");
-          return notFoundResponse.GetResponse();
+          _responseContext.SetResponse(new StatusResponse("Not Found", "The category compatible with these parameters was not found."));
+          return _responseContext.GetResponse();
         }
 
         tradeIn.Category = selectedTradeRisk.Category;
         _tradeRiskService.Update(id, tradeIn);
 
-        TradeResponse successResponse = new TradeResponse(tradeIn);
-        return successResponse.GetResponse();
+        _responseContext.SetResponse(new TradeResponse(tradeIn));
+        return _responseContext.GetResponse();
       }
       catch (Exception ex)
       {
-        ErrorResponse<TradesController> errorResponse = new ErrorResponse<TradesController>(_logger, ex);
-        return errorResponse.GetResponse();
+        _responseContext.SetResponse(new ErrorResponse<TradesController>(_logger, ex));
+        return _responseContext.GetResponse();
       }
     }
 
@@ -154,21 +157,20 @@ namespace TradeBook.Controllers
 
         if (registeredTrade == null)
         {
-          StatusResponse notFoundResponse = new StatusResponse("Not Found", "Trade not found");
-          return notFoundResponse.GetResponse();
+          _responseContext.SetResponse(new StatusResponse("Not Found", "Trade not found"));
+          return _responseContext.GetResponse();
         }
 
         _tradeRiskService.Remove(registeredTrade);
 
-        StatusResponse successResponse = new StatusResponse("Success", "Trade successfully deleted");
-        return successResponse.GetResponse();
+        _responseContext.SetResponse(new StatusResponse("Success", "Trade successfully deleted"));
+        return _responseContext.GetResponse();
       }
       catch (Exception ex)
       {
-        ErrorResponse<TradesController> errorResponse = new ErrorResponse<TradesController>(_logger, ex);
-        return errorResponse.GetResponse();
+        _responseContext.SetResponse(new ErrorResponse<TradesController>(_logger, ex));
+        return _responseContext.GetResponse();
       }
     }
-
   }
 }

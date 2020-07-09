@@ -1,9 +1,10 @@
 using System;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using TradeBook.Services;
+using TradeBook.Models.Operations;
 using TradeBook.Models.Operations.Requests;
 using TradeBook.Models.Operations.Responses;
+using TradeBook.Services;
 
 namespace TradeBook.Controllers
 {
@@ -13,12 +14,14 @@ namespace TradeBook.Controllers
   {
     private readonly ILogger<ResetTradesController> _logger;
     private readonly TradeRiskService _tradeRiskService;
+    private readonly ResponseContext _responseContext;
 
     public ResetTradesController(ILogger<ResetTradesController> logger,
         TradeRiskService tradeRiskService)
     {
       _logger = logger;
       _tradeRiskService = tradeRiskService;
+      _responseContext = new ResponseContext();
     }
 
     [HttpPost]
@@ -28,19 +31,19 @@ namespace TradeBook.Controllers
       {
         if (!doubleCheck.Confirm)
         {
-          StatusResponse unauthorizedResponse = new StatusResponse("Unauthorized", "Operation not confirmed");
-          return unauthorizedResponse.GetResponse();
+          _responseContext.SetResponse(new StatusResponse("Unauthorized", "Operation not confirmed"));
+          return _responseContext.GetResponse();
         }
 
         _tradeRiskService.RemoveAll();
 
-        StatusResponse successResponse = new StatusResponse("Success", "Portfolio successfully deleted");
-        return successResponse.GetResponse();
+        _responseContext.SetResponse(new StatusResponse("Success", "Portfolio successfully deleted"));
+        return _responseContext.GetResponse();
       }
       catch (Exception ex)
       {
-        ErrorResponse<ResetTradesController> errorResponse = new ErrorResponse<ResetTradesController>(_logger, ex);
-        return errorResponse.GetResponse();
+        _responseContext.SetResponse(new ErrorResponse<ResetTradesController>(_logger, ex));
+        return _responseContext.GetResponse();
       }
     }
 
