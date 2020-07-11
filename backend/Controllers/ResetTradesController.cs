@@ -32,18 +32,18 @@ namespace TradeBook.Controllers
       {
         if (!doubleCheck.Confirm)
         {
-          _responseContext.SetResponse(new StatusResponse("Unauthorized", "Operation not confirmed"));
+          _responseContext.SetResponseContext(new StatusResponse("Unauthorized", "Operation not confirmed"));
           return _responseContext.GetResponse();
         }
 
         await _tradeRiskService.RemoveAll();
 
-        _responseContext.SetResponse(new StatusResponse("Success", "Portfolio successfully deleted"));
+        _responseContext.SetResponseContext(new StatusResponse("Success", "Portfolio successfully deleted"));
         return _responseContext.GetResponse();
       }
       catch (Exception ex)
       {
-        _responseContext.SetResponse(new ErrorResponse<ResetTradesController>(_logger, ex));
+        _responseContext.SetResponseContext(new ErrorResponse<ResetTradesController>(_logger, ex));
         return _responseContext.GetResponse();
       }
     }

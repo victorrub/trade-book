@@ -16,7 +16,7 @@ namespace TradeBook.Models.Operations
       _responseStrategy = responseStrategy;
     }
 
-    public void SetResponse(ResponseBase responseStrategy)
+    public void SetResponseContext(ResponseBase responseStrategy)
     {
       _responseStrategy = responseStrategy;
     }
