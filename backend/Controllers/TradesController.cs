@@ -8,6 +8,7 @@ using TradeBook.Models.Risks;
 using TradeBook.Models.Operations;
 using TradeBook.Models.Operations.Responses;
 using TradeBook.Services;
+using System.Threading.Tasks;
 
 namespace TradeBook.Controllers
 {
@@ -16,12 +17,12 @@ namespace TradeBook.Controllers
   public class TradesController : ControllerBase
   {
     private readonly ILogger<TradesController> _logger;
-    private readonly TradeCategoriesService _tradeCategoriesService;
+    private readonly CachedTradeCategories _tradeCategoriesService;
     private readonly TradeRiskService _tradeRiskService;
     private readonly ResponseContext _responseContext;
 
     public TradesController(ILogger<TradesController> logger,
-        TradeCategoriesService tradeCategoriesService,
+        CachedTradeCategories tradeCategoriesService,
         TradeRiskService tradeRiskService)
     {
       _logger = logger;
@@ -71,11 +72,11 @@ namespace TradeBook.Controllers
     }
 
     [HttpPost]
-    public ActionResult Post(List<Trade> portfolio)
+    public async Task<ActionResult> Post(List<Trade> portfolio)
     {
       try
       {
-        List<RiskEvaluator> categories = _tradeCategoriesService.GetRiskCategories();
+        List<RiskEvaluator> categories = await _tradeCategoriesService.GetRiskCategories();
         TradeFactory factory = new TradeRiskFactory();
 
         List<TradeRisk> tradeRisks = new List<TradeRisk>();
@@ -114,7 +115,7 @@ namespace TradeBook.Controllers
     }
 
     [HttpPut("{id}")]
-    public ActionResult Put(string id, [FromBody] Trade tradeIn)
+    public async Task<ActionResult> Put(string id, [FromBody] Trade tradeIn)
     {
       try
       {
@@ -126,7 +127,7 @@ namespace TradeBook.Controllers
           return _responseContext.GetResponse();
         }
 
-        List<RiskEvaluator> categories = _tradeCategoriesService.GetRiskCategories();
+        List<RiskEvaluator> categories = await _tradeCategoriesService.GetRiskCategories();
         RiskEvaluator selectedTradeRisk = categories.Find(rules => rules.VerifyRules(tradeIn));
 
         if (selectedTradeRisk == null)

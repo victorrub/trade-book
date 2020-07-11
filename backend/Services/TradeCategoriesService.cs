@@ -4,32 +4,32 @@ using System.Linq;
 using TradeBook.Models;
 using TradeBook.Data;
 using TradeBook.Services.Core;
+using System.Threading.Tasks;
 
 namespace TradeBook.Services
 {
-  public class TradeCategoriesService : DatabaseServices
+  public class TradeCategoriesService : DatabaseServices, ITradeCategoriesService
   {
     public TradeCategoriesService(TradeBookContext context) : base(context)
     {
     }
 
-    public List<RiskEvaluator> GetRiskCategories()
+    public async Task<List<RiskEvaluator>> GetRiskCategories()
     {
-      List<TradeCategories> categories = Context.TradeCategories.Find(category => true).ToList();
-      List<RiskEvaluator> risks = new List<RiskEvaluator>();
+      var categories = await Context.TradeCategories.Find(category => true).ToListAsync();
 
-      foreach (TradeCategories category in categories)
+      var risks = categories.Select(category => Task.Factory.StartNew(() =>
       {
-        risks.Add(new RiskEvaluator(
+        return new RiskEvaluator(
           category.Category,
           category.MinimumValue,
           category.LimitValue,
           category.ClientSector,
           category.UpdatedAt
-        ));
-      }
+        );
+      }));
 
-      return risks;
+      return (await Task.WhenAll(risks)).ToList();
     }
   }
 }

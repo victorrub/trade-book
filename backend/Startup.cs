@@ -1,5 +1,7 @@
+using System.IO.Compression;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -7,6 +9,7 @@ using Microsoft.Extensions.Options;
 using TradeBook.Data;
 using TradeBook.Data.Core;
 using TradeBook.Services;
+using TradeBook.Services.Core;
 
 namespace TradeBook
 {
@@ -22,16 +25,40 @@ namespace TradeBook
     public void ConfigureServices(IServiceCollection services)
     {
       services.Configure<DbContextOptions>(Configuration.GetSection("TradeBookDatabase"));
+      services.Configure<CacheContextOptions>(Configuration.GetSection("TradeBookCache"));
 
       services.AddSingleton<IDbContextOptions>(
         sp => sp.GetRequiredService<IOptions<DbContextOptions>>().Value
       );
 
+      services.AddSingleton<ICacheContextOptions>(
+        sp => sp.GetRequiredService<IOptions<CacheContextOptions>>().Value
+      );
+
+      services.AddDistributedRedisCache(options =>
+      {
+        options.Configuration = Configuration
+          .GetSection("TradeBookCache")
+          .GetValue<string>("ConnectionString");
+        options.InstanceName = "TradeBook:";
+      });
+
       services.AddSingleton<TradeBookContext>();
 
       services.AddSingleton<TradeService>();
       services.AddSingleton<TradeCategoriesService>();
+      services.AddSingleton<CachedTradeCategories>();
       services.AddSingleton<TradeRiskService>();
+
+      services.Configure<GzipCompressionProviderOptions>(options =>
+      {
+        options.Level = CompressionLevel.Optimal;
+      })
+      .AddResponseCompression(options =>
+      {
+        options.Providers.Add<GzipCompressionProvider>();
+        options.EnableForHttps = true;
+      });
 
       services.AddControllers();
     }
