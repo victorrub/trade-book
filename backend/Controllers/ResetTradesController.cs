@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using TradeBook.Models.Operations;
@@ -25,7 +26,7 @@ namespace TradeBook.Controllers
     }
 
     [HttpPost]
-    public ActionResult Post(ConfirmRequest doubleCheck)
+    public async Task<ActionResult> Post(ConfirmRequest doubleCheck)
     {
       try
       {
@@ -35,7 +36,7 @@ namespace TradeBook.Controllers
           return _responseContext.GetResponse();
         }
 
-        _tradeRiskService.RemoveAll();
+        await _tradeRiskService.RemoveAll();
 
         _responseContext.SetResponse(new StatusResponse("Success", "Portfolio successfully deleted"));
         return _responseContext.GetResponse();

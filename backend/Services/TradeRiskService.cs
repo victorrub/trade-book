@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using TradeBook.Data;
 using TradeBook.Models;
 using TradeBook.Models.Risks;
@@ -10,7 +11,7 @@ namespace TradeBook.Services
     {
     }
 
-    public void Store(TradeRisk tradeRisk)
+    public async Task Store(TradeRisk tradeRisk)
     {
       Trade trade = new Trade
       {
@@ -19,7 +20,7 @@ namespace TradeBook.Services
         ClientSector = tradeRisk.ClientSector
       };
 
-      Create(trade);
+      await Create(trade);
     }
 
   }

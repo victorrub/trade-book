@@ -32,11 +32,11 @@ namespace TradeBook.Controllers
     }
 
     [HttpGet]
-    public ActionResult<List<Trade>> Get()
+    public async Task<ActionResult<List<Trade>>> Get()
     {
       try
       {
-        List<Trade> trades = _tradeRiskService.Get();
+        List<Trade> trades = await _tradeRiskService.Get();
 
         _responseContext.SetResponse(new TradeListResponse(trades));
         return _responseContext.GetResponse();
@@ -49,11 +49,11 @@ namespace TradeBook.Controllers
     }
 
     [HttpGet("{id}")]
-    public ActionResult<Trade> Get(string id)
+    public async Task<ActionResult<Trade>> Get(string id)
     {
       try
       {
-        Trade trade = _tradeRiskService.Get(id);
+        Trade trade = await _tradeRiskService.Get(id);
 
         if (trade == null)
         {
@@ -100,7 +100,7 @@ namespace TradeBook.Controllers
 
           TradeRisk tradeRisk = factory.CreateTrade(selectedTradeRisk.Category, trade.Value, trade.ClientSector);
 
-          _tradeRiskService.Store(tradeRisk);
+          await _tradeRiskService.Store(tradeRisk);
           tradeRisks.Add(tradeRisk);
         }
 
@@ -119,7 +119,7 @@ namespace TradeBook.Controllers
     {
       try
       {
-        Trade registeredTrade = _tradeRiskService.Get(id);
+        Trade registeredTrade = await _tradeRiskService.Get(id);
 
         if (registeredTrade == null)
         {
@@ -137,7 +137,7 @@ namespace TradeBook.Controllers
         }
 
         tradeIn.Category = selectedTradeRisk.Category;
-        _tradeRiskService.Update(id, tradeIn);
+        await _tradeRiskService.Update(id, tradeIn);
 
         _responseContext.SetResponse(new TradeResponse(tradeIn));
         return _responseContext.GetResponse();
@@ -150,11 +150,11 @@ namespace TradeBook.Controllers
     }
 
     [HttpDelete("{id}")]
-    public ActionResult Delete(string id)
+    public async Task<ActionResult> Delete(string id)
     {
       try
       {
-        Trade registeredTrade = _tradeRiskService.Get(id);
+        Trade registeredTrade = await _tradeRiskService.Get(id);
 
         if (registeredTrade == null)
         {
@@ -162,7 +162,7 @@ namespace TradeBook.Controllers
           return _responseContext.GetResponse();
         }
 
-        _tradeRiskService.Remove(registeredTrade);
+        await _tradeRiskService.Remove(registeredTrade);
 
         _responseContext.SetResponse(new StatusResponse("Success", "Trade successfully deleted"));
         return _responseContext.GetResponse();

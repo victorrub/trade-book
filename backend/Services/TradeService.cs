@@ -1,10 +1,10 @@
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using TradeBook.Models;
 using TradeBook.Data;
 using TradeBook.Services.Core;
+using System.Threading.Tasks;
 
 namespace TradeBook.Services
 {
@@ -14,21 +14,21 @@ namespace TradeBook.Services
     {
     }
 
-    public List<Trade> Get() => Context.Trade.Find(trade => true).ToList();
+    public async Task<List<Trade>> Get() => await Context.Trade.Find(trade => true).ToListAsync();
 
-    public Trade Get(string id) => Context.Trade.Find(trade => trade.Id == id).FirstOrDefault();
+    public async Task<Trade> Get(string id) => await Context.Trade.Find(trade => trade.Id == id).FirstOrDefaultAsync();
 
-    public void Create(Trade trade)
+    public async Task Create(Trade trade)
     {
       trade.CreatedAt = DateTime.Now;
       trade.UpdatedAt = DateTime.Now;
 
-      Context.Trade.InsertOne(trade);
+      await Context.Trade.InsertOneAsync(trade);
     }
 
-    public void Update(string id, Trade tradeIn)
+    public async Task Update(string id, Trade tradeIn)
     {
-      Trade trade = Get(id);
+      Trade trade = await Get(id);
 
       if (trade == null) throw new ArgumentException("Trade not found");
 
@@ -36,11 +36,11 @@ namespace TradeBook.Services
       tradeIn.CreatedAt = trade.CreatedAt;
       tradeIn.UpdatedAt = DateTime.Now;
 
-      Context.Trade.ReplaceOne(trade => trade.Id == id, tradeIn);
+      await Context.Trade.ReplaceOneAsync(trade => trade.Id == id, tradeIn);
     }
 
-    public void Remove(Trade tradeIn) => Context.Trade.DeleteOne(trade => trade.Id == tradeIn.Id);
+    public async Task Remove(Trade tradeIn) => await Context.Trade.DeleteOneAsync(trade => trade.Id == tradeIn.Id);
 
-    public void RemoveAll() => Context.Trade.DeleteMany(trade => true);
+    public async Task RemoveAll() => await Context.Trade.DeleteManyAsync(trade => true);
   }
 }
