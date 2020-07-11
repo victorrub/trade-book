@@ -13,7 +13,7 @@ namespace TradeBook.Models.Operations.Responses
     public ErrorResponse(ILogger<T> logger, Exception ex) : base("Error")
     {
       _logger = logger;
-      _logger.LogError($"> [{typeof(T).Name} | {ex.StackTrace}] Exception : {ex.Message}");
+      _logger.LogError($"> [{typeof(T).Name} | {ex.Source}] Exception : {ex.Message}");
 
       Message = "An error occurred while processing your request.";
     }
