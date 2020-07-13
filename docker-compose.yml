@@ -1,0 +1,89 @@
+version: "3.7"
+
+services:
+  api:
+    image: victorrub/tradebook
+    ports:
+      - "80:80"
+    deploy:
+      mode: replicated
+      replicas: 3
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 250M
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 60s
+        order: stop-first
+      restart_policy:
+        condition: on-failure
+    networks:
+      - backend-network
+    depends_on:
+      - mongo
+      - redis
+
+  mongo:
+    image: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: #password
+    ports:
+      - "27017"
+    volumes:
+      - db_data:/data/db
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 60s
+        order: stop-first
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+      placement:
+        constraints:
+          - "node.role==manager"
+    networks:
+      - backend-network
+
+  redis:
+    image: redis:alpine
+    command: redis-server --requirepass #password
+    ports:
+      - "6379"
+    deploy:
+      replicas: 2
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 60s
+        order: stop-first
+      restart_policy:
+        condition: on-failure
+    networks:
+      - backend-network
+
+networks:
+  backend-network:
+
+volumes:
+  db_data:
