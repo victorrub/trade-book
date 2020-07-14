@@ -12,6 +12,7 @@ Tradebook identifies the category of each trade based on the registered business
 
 - [TradeBook API](http://104.197.195.158/trades)
 - [API documentation](https://trade-book.readme.io/)
+- [Docker Swarm Structure](http://104.197.195.158:8080/)
 
 ## Author
 
