@@ -103,7 +103,8 @@ The following displayed result will be something like this:
     "acknowledged" : true,
     "insertedIds" : [
       ObjectId("5bfd996f7b8e48dc15ff215d"),
-      ObjectId("5bfd996f7b8e48dc15ff215e")
+      ObjectId("5bfd996f7b8e48dc15ff215e"),
+      ObjectId("5bfd996f7b8e48dc15ff215f")
     ]
   }
 ```
@@ -142,9 +143,9 @@ Use the [dotnet](https://docs.microsoft.com/pt-br/dotnet/core/tools/) to run you
 
 ## 1.., 2.., 3.., Testing!
 
-Using your browser, access: `https://localhost:5001/trades`
+Using your browser, access: `https://localhost:5001/`
 
-The following result is displayed:
+The following displayed result will be something like this:
 
 ![](../public/content/api_test_get.png)
 
