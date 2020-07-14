@@ -1,0 +1,47 @@
+[
+  {
+    "_id": {
+      "$oid": "5f0cd0c941015e4bde7e16be"
+    },
+    "name": "LowRisk",
+    "minimumValue": 0,
+    "limitValue": 1000000,
+    "clientSector": "Public",
+    "createdAt": {
+      "$date": "2020-07-04T15:48:03Z"
+    },
+    "updatedAt": {
+      "$date": "2020-07-04T15:48:03Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "5f0cd0c941015e4bde7e16bf"
+    },
+    "name": "MediumRisk",
+    "minimumValue": 1000000,
+    "limitValue": 0,
+    "clientSector": "Public",
+    "createdAt": {
+      "$date": "2020-07-04T15:48:03Z"
+    },
+    "updatedAt": {
+      "$date": "2020-07-04T15:48:03Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "5f0cd0c941015e4bde7e16c0"
+    },
+    "name": "HighRisk",
+    "minimumValue": 1000000,
+    "limitValue": 0,
+    "clientSector": "Private",
+    "createdAt": {
+      "$date": "2020-07-04T15:48:03Z"
+    },
+    "updatedAt": {
+      "$date": "2020-07-04T15:48:03Z"
+    }
+  }
+]
