@@ -9,6 +9,6 @@ namespace TradeBook.Models.Rules
       _clientSector = clientSector;
     }
 
-    public bool IsMatch(Trade trade) => trade.ClientSector == _clientSector;
+    public bool IsMatch(Trade trade) => trade.ClientSector.ToLower() == _clientSector.ToLower();
   }
 }
