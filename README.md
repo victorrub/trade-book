@@ -1,12 +1,17 @@
 # Trade Book
 
-Application focused to identify the categories of trades in a bank´s portfolio based on value and client´s sector.
+## Overview
 
-## Main Issue
+Trade book is an application focused to identify the categories of trades in a bank´s portfolio based on value and client´s sector.
 
-A bank has a portfolio of thousands of trades and they need to be categorized. A trade is a commercial negotiation between a bank and a client.
+Imagine that a bank has a portfolio of thousands of trades and they need to be categorized. A trade is a commercial negotiation between a bank and a client.
+
 Each trade has a value that indicates the transaction amount in dollars and a text indicating if the client´s sector is "Public" or "Private".
 
+Tradebook identifies the category of each trade based on the registered business rule 😀
+
+- [TradeBook API](http://104.197.195.158/trades)
+- [API documentation](https://trade-book.readme.io/)
 
 ## Author
 
