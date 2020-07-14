@@ -50,6 +50,14 @@ namespace TradeBook
       services.AddSingleton<CachedTradeCategories>();
       services.AddSingleton<TradeRiskService>();
 
+      services.AddCors(options =>
+      {
+        options.AddPolicy("CorsPolicy", builder => builder
+            .AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader());
+      });
+
       services.Configure<GzipCompressionProviderOptions>(options =>
       {
         options.Level = CompressionLevel.Optimal;
@@ -67,6 +75,8 @@ namespace TradeBook
     {
       if (env.IsDevelopment())
         app.UseDeveloperExceptionPage();
+
+      app.UseCors("CorsPolicy");
 
       app.UseHttpsRedirection();
 
